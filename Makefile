@@ -2,39 +2,52 @@
 
 PROJECT=ini-parser
  
-AR=ar
 PP=cpp
 CC=cc
-CCFLAGS=-O3
+LD=ld
+AR=ar
+CCFLAGS=-O3 -Werror -Wall
+LDFLAGS=
  
 SRCDIR=src
 BINDIR=bin
 BUILDDIR=build
  
-TARGET=$(BINDIR)/libini-parser.a
-CCOBJSFILE=$(BUILDDIR)/ccobjs
--include $(CCOBJSFILE)
+STATIC_TARGET=$(BINDIR)/libini-parser.a
+SHARED_TARGET=$(BINDIR)/libini-parser.so
+
+$(SHARED_TARGET) : CCFLAGS+=-fPIC
+$(SHARED_TARGET) : LDFLAGS+=-shared
+
+CCOBJS=$(wildcard $(SRCDIR)/*.c)
 LDOBJS=$(patsubst $(SRCDIR)%.c,$(BUILDDIR)%.o,$(CCOBJS))
- 
 DEPEND=$(LDOBJS:.o=.dep)
+
+BUILDMSG="\e[1;31mBUILD\e[0m $<"
+LINKMSG="\e[1;34mLINK\e[0m  \e[1;32m$@\e[0m"
+CLEANMSG="\e[1;34mCLEAN\e[0m $(PROJECT)"
  
-static : $(CCOBJSFILE) $(TARGET)
-	@$(RM) $(CCOBJSFILE)
+shared : $(SHARED_TARGET)
+ 
+static : $(STATIC_TARGET)
  
 clean : 
-	@echo -en "\e[1;34mClean $(PROJECT) \e[0m... " && $(RM) $(BINDIR)/* $(BUILDDIR)/* && echo -e "\e[1;32mOK\e[0m"
+	@$(RM) $(BINDIR)/* $(BUILDDIR)/*
+	@echo -e $(CLEANMSG)
  
-$(CCOBJSFILE) : 
-	@echo CCOBJS=`ls $(SRCDIR)/*.c` > $(CCOBJSFILE)
+$(STATIC_TARGET) : $(LDOBJS)
+	@$(AR) csq $@ $^
+	@echo -e $(LINKMSG)
  
-$(TARGET) : $(LDOBJS)
-	@echo -en "\e[1;34mLinking $@ \e[0m... " && $(AR) csq $@ $^ && echo -e "\e[1;32mOK\e[0m"
+$(SHARED_TARGET) : $(LDOBJS)
+	@$(CC) -o $@ $^ $(LDFLAGS)
+	@echo -e $(LINKMSG)
  
 $(BUILDDIR)/%.dep : $(SRCDIR)/%.c
 	@$(PP) $(CCFLAGS) -MM -MT $(@:.dep=.o) -o $@ $<
  
 $(BUILDDIR)/%.o : $(SRCDIR)/%.c
-	@echo -en "\e[1;31mCompiling $< \e[0m... " && $(CC) $(CCFLAGS) -c -o $@ $< && echo -e "\e[1;32mOK\e[0m"
+	@$(CC) $(CCFLAGS) -c -o $@ $<
+	@echo -e $(BUILDMSG)
  
 -include $(DEPEND)
-
