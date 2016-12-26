@@ -1,7 +1,7 @@
 # Makefile for ini-parser
-
-PROJECT=ini-parser
  
+PROJECT=ini-parser
+
 PP=cpp
 CC=cc
 LD=ld
@@ -17,7 +17,7 @@ STATIC_TARGET=$(BINDIR)/libini-parser.a
 SHARED_TARGET=$(BINDIR)/libini-parser.so
 
 $(SHARED_TARGET) : CCFLAGS+=-fPIC
-$(SHARED_TARGET) : LDFLAGS+=-shared
+$(SHARED_TARGET) : LDFLAGS+=-shared -pthread
 
 CCOBJS=$(wildcard $(SRCDIR)/*.c)
 LDOBJS=$(patsubst $(SRCDIR)%.c,$(BUILDDIR)%.o,$(CCOBJS))
@@ -27,10 +27,9 @@ BUILDMSG="\e[1;31mBUILD\e[0m $<"
 LINKMSG="\e[1;34mLINK\e[0m  \e[1;32m$@\e[0m"
 CLEANMSG="\e[1;34mCLEAN\e[0m $(PROJECT)"
  
-shared : $(SHARED_TARGET)
- 
 static : $(STATIC_TARGET)
- 
+shared : $(SHARED_TARGET)
+
 clean : 
 	@$(RM) $(BINDIR)/* $(BUILDDIR)/*
 	@echo -e $(CLEANMSG)
