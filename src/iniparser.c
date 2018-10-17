@@ -820,8 +820,8 @@ iniparser_load (const char *ininame)
             continue;
         }
 
-        switch (
-        iniparser_line (total_size, full_line, &current_section, &key, &val)) {
+        switch (iniparser_line (total_size, full_line, &current_section, &key,
+                                &val)) {
         case LINE_EMPTY:
         case LINE_COMMENT:
             break;
