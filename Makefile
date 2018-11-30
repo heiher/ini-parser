@@ -38,21 +38,25 @@ static : $(STATIC_TARGET)
 shared : $(SHARED_TARGET)
 
 clean : 
-	$(ECHO_PREFIX) $(RM) $(BINDIR)/* $(BUILDDIR)/*
+	$(ECHO_PREFIX) $(RM) -rf $(BINDIR) $(BUILDDIR)
 	@echo -e $(CLEANMSG)
  
 $(STATIC_TARGET) : $(LDOBJS)
+	$(ECHO_PREFIX) mkdir -p $(dir $@)
 	$(ECHO_PREFIX) $(AR) csq $@ $^
 	@echo -e $(LINKMSG)
  
 $(SHARED_TARGET) : $(LDOBJS)
+	$(ECHO_PREFIX) mkdir -p $(dir $@)
 	$(ECHO_PREFIX) $(CC) -o $@ $^ $(LDFLAGS)
 	@echo -e $(LINKMSG)
  
 $(BUILDDIR)/%.dep : $(SRCDIR)/%.c
+	$(ECHO_PREFIX) mkdir -p $(dir $@)
 	$(ECHO_PREFIX) $(PP) $(CCFLAGS) -MM -MT $(@:.dep=.o) -o $@ $<
  
 $(BUILDDIR)/%.o : $(SRCDIR)/%.c
+	$(ECHO_PREFIX) mkdir -p $(dir $@)
 	$(ECHO_PREFIX) $(CC) $(CCFLAGS) -c -o $@ $<
 	@echo -e $(BUILDMSG)
  
