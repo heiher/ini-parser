@@ -7,7 +7,7 @@ PP=$(CROSS_PREFIX)cpp
 CC=$(CROSS_PREFIX)gcc
 LD=$(CROSS_PREFIX)ld
 AR=$(CROSS_PREFIX)ar
-CCFLAGS=-O3 -pipe -Werror -Wall
+CCFLAGS=-O3 -pipe -Werror -Wall $(CFLAGS)
 LDFLAGS=
  
 SRCDIR=src
